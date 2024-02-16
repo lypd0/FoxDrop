@@ -32,7 +32,7 @@ Using FoxDrop for educational purposes involves several steps:
 FoxDrop is intended for educational purposes only. The author does not endorse or encourage any illegal or malicious use of this software. Any misuse or unethical use of FoxDrop is strictly prohibited.
 
 ## Author
-FoxDrop is developed by Luigi Fiore, also known as lypd0. Luigi is passionate about cybersecurity education and aims to raise awareness about malware threats.
+FoxDrop is developed by Luigi Fiore, also known as lypd0.
 
 ## License
 This project is licensed under the MIT License, allowing for exploration, modification, and distribution. Refer to the [LICENSE](LICENSE) file for detailed licensing terms.
