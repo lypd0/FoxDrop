@@ -1,4 +1,4 @@
-<center> <img src="https://cdn.lypd0.com/FoxDrop/logo.png"> </center>
+<img align="center" src="https://cdn.lypd0.com/FoxDrop/logo.png">
 
 
 <h1 align="center">FoxDrop - A Malware Dropper Proof-of-Concept</h1>
