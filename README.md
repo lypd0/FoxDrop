@@ -1,6 +1,4 @@
 <div align="center"><img src="https://cdn.lypd0.com/FoxDrop/logo.png"></div>
-
-
 <h1 align="center">FoxDrop - A Malware Dropper Proof-of-Concept</h1>
 <p align="center">
   <a href="#"><img alt="forksBDG" src="https://img.shields.io/github/forks/lypd0/FoxDrop?style=for-the-badge"></a>
