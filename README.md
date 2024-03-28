@@ -32,6 +32,9 @@ FoxDrop is intended for educational purposes only. The author does not endorse o
 ## Author
 FoxDrop is developed by Luigi Fiore, also known as lypd0.
 
+## Contributors
+ - [kirner](http://github.com/kirner)
+
 ## License
 This project is licensed under the MIT License, allowing for exploration, modification, and distribution. Refer to the [LICENSE](LICENSE) file for detailed licensing terms.
 
