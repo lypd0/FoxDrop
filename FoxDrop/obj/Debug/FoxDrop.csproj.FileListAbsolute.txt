@@ -1,0 +1,7 @@
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\bin\Debug\SysAudio Manager.exe.config
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\bin\Debug\SysAudio Manager.exe
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\bin\Debug\SysAudio Manager.pdb
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\obj\Debug\FoxDrop.csproj.AssemblyReference.cache
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\obj\Debug\FoxDrop.csproj.CoreCompileInputs.cache
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\obj\Debug\SysAudio Manager.exe
+C:\Users\Lypd\source\repos\FoxDrop\FoxDrop\obj\Debug\SysAudio Manager.pdb

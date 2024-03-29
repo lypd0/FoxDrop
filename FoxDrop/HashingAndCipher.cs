@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FoxDrop
 {
-    internal class Hashing
+    internal class HashingAndCipher
     {
         public static string CalculateMD5(string input)
         {
@@ -44,6 +44,29 @@ namespace FoxDrop
                     return sb.ToString();
                 }
             }
+        }
+
+        public static char CeasarCipher(char ch, int key)
+        {
+            if (!char.IsLetter(ch))
+                return ch;
+
+            char d = char.IsUpper(ch) ? 'A' : 'a';
+            return (char)((((ch + key) - d) % 26) + d);
+        }
+
+        public static string CCEncipher(string input, int key)
+        {
+            string output = string.Empty;
+            foreach (char ch in input)
+                output += CeasarCipher(ch, key);
+
+            return output;
+        }
+
+        public static string CCDecipher(string input, int key)
+        {
+            return CCEncipher(input, 26 - key);
         }
     }
 }

